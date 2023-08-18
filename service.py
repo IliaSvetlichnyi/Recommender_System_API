@@ -11,12 +11,12 @@ from typing import List
 
 
 '''
-ФУНКЦИИ ПО ЗАГРУЗКЕ МОДЕЛЕЙ
+MODEL LOADING FUNCTIONS
 '''
-# Проверка если код выполняется в лмс, или локально
+# Check if the code runs in LMS or locally
 def get_model_path(path: str) -> str:
-    """Просьба не менять этот код"""
-    if os.environ.get("IS_LMS") == "1":  # проверяем где выполняется код в лмс, или локально. Немного магии
+
+    if os.environ.get("IS_LMS") == "1":
         MODEL_PATH = '/workdir/user_input/model'
     else:
         MODEL_PATH = path
@@ -26,7 +26,7 @@ class CatBoostWrapper(CatBoost):
     def predict_proba(self, X):
         return self.predict(X, prediction_type='Probability')
 
-# Загрузка модели
+# Loading model
 def load_models():
     model_path = get_model_path("/Users/ilya/Desktop/GitHub_Repositories/My_knowledge_base/Курс Start ML/Финальный проект/DataSets/catboost_model_data10_best_hitrate.cbm")
     model = CatBoostWrapper()
@@ -34,9 +34,9 @@ def load_models():
     return model
 
 '''
-Получение данных из базы данных
+FETCHING DATA FROM DATABASE
 '''
-# Определяем функцию для получения данных из базы данных PostgreSQL
+# Define a function to fetch data from the PostgreSQL database
 def batch_load_sql(query: str) -> pd.DataFrame:
     CHUNKSIZE = 200000
     total_rows_for_5_percent = 3844565
@@ -64,50 +64,50 @@ def load_features() -> pd.DataFrame:
 
 
 def predict_posts(user_id: int, limit: int):
-    # Фильтруем записи, относящиеся к конкретному user_id
+    # Filter records related to the specific user_id
     user_features = features[features.user_id == user_id]
 
-    # Вычисляем вероятности для каждого post_id для конкретного user_id
+    # Calculate probabilities for each post_id for the specific user_id
     user_features['probas'] = model.predict_proba(user_features.drop('user_id', axis=1))[:, 1]
 
-    # Сортируем DataFrame по 'probas' в порядке убывания и получаем первые 'limit' записей
+    # Sort the DataFrame by 'probas' in descending order and get the first 'limit' records
     top_posts = user_features.sort_values('probas', ascending=False).iloc[:limit]
 
-    # Возвращаем 'post_id' лучших записей в виде списка
+    # Return the 'post_id' of the best records as a list
     return top_posts['post_id'].tolist()
 
 
 def load_post_texts_df():
     global post_texts_df
-    print("Загружаю все тексты постов...")
+    print("Uploading all the texts of the posts...")
     query = "SELECT * FROM post_text_df"
     engine = create_engine(
         "postgresql://robot-startml-ro:pheiph0hahj1Vaif@"
         "postgres.lab.karpov.courses:6432/startml"
     )
     post_texts_df = pd.read_sql(query, con=engine)
-    print("Все тексты постов успешно загружены в память.")
+    print("All the texts of the posts have been successfully loaded into memory.")
 
 
 def load_post_texts(post_ids: List[int]) -> List[dict]:
     global post_texts_df
     if post_texts_df is None:
-        raise ValueError("Таблица с текстами постов не загружена. Сначала вызовите функцию load_post_texts_df().")
+        raise ValueError("The table with the texts of the posts is not loaded. First call the 'load_post_text_df()' function.")
 
-    # Извлекаем записи из памяти
+    # Extracting records from memory
     records_df = post_texts_df[post_texts_df['post_id'].isin(post_ids)]
     return records_df.to_dict("records")
 
 
 '''
-ЗАГРУЗКА МОДЕЛЕЙ И ФИЧЕЙ (БЕЗ ПОТОКОВ)
+LOADING MODELS AND FEATURES (WITHOUT THREADING)
 '''
 
 model = load_models()
-print("Модель загружена")
+print("Model loaded")
 features = load_features()
-print("Данные загружены")
-# Глобальная переменная для хранения данных
+print("Data loaded")
+# Global variable to store data
 post_texts_df = None
 load_post_texts_df()
 

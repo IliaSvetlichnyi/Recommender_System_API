@@ -17,6 +17,6 @@ def batch_load_sql(query: str) -> pd.DataFrame:
 
 
 def load_features() -> pd.DataFrame:
-    query = 'ilia_svetlichnyi_features_lesson_22_v3'  # Замените на фактический SQL-запрос
+    query = 'ilia_svetlichnyi_features_lesson_22_v3'
     features_df = batch_load_sql(query)
     return features_df
