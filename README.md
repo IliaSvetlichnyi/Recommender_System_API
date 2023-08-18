@@ -2,26 +2,36 @@
 
 This repository showcases an API-driven recommendation system tailored to deliver customized text post recommendations, leveraging user data for enhanced personalization.
 
-**Repository Overview**
-- **creating_features.ipynb**: A Jupyter notebook dedicated to feature engineering and data preprocessing. It offers a deep dive into the methods employed for data extraction, transformation, and subsequent loading (ETL).
-- **training_model.ipynb**: This notebook encapsulates the core of our machine learning approach, detailing data manipulation, model training, and performance evaluation. A plethora of ML techniques find their application here.
-- **service.py**: Acting as the backbone of our API, this script orchestrates the request-response cycle, leveraging the trained model to curate recommendations. It ensures seamless HTTP request handling, data processing, and response dispatching.
+### Repository Overview
+- `creating_features.ipynb`: A Jupyter notebook dedicated to feature engineering and data preprocessing. It offers a deep dive into the methods employed for data extraction, transformation, and subsequent loading (ETL).
+- `training_model.ipynb`: This notebook encapsulates the core of our machine learning approach, detailing data manipulation, model training, and performance evaluation. A plethora of ML techniques find their application here.
+- `service.py`: Acting as the backbone of our API, this script orchestrates the request-response cycle, leveraging the trained model to curate recommendations. It ensures seamless HTTP request handling, data processing, and response dispatching.
 
-**Dataset Breakdown**
-- **user_data**: Comprehensive user-centric data, encompassing fields like age, city, experience group, OS, and more, totaling 163,205 records.
-- **post_text_df**: A dedicated dataset for text post details, inclusive of the post ID, text, and topic, spanning 7,023 records.
-- **feed_data**: A rich dataset capturing the intricacies of user-post interactions, which includes fields like timestamp, user ID, post ID, and more, amassing 76,892,800 entries.
 
-**Feature Generation**
+
+### Dataset Breakdown
+- `user_data`: Comprehensive user-centric data, encompassing fields like age, city, experience group, OS, and more, totaling 163,205 records.
+- `post_text_df`: A dedicated dataset for text post details, inclusive of the post ID, text, and topic, spanning 7,023 records.
+- `feed_data`: A rich dataset capturing the intricacies of user-post interactions, which includes fields like timestamp, user ID, post ID, and more, amassing 76,892,800 entries.
+
+
+
+### Feature Generation
 By synergizing user and post data, a gamut of features was crafted. Techniques such as text length calculations, accumulative post metrics, and category encoding were employed. The Catboost model's innate feature importance was capitalized on to cherry-pick the most influential features, while features prone to data leakage were judiciously excluded.
 
-**Model Insights**
+
+
+### Model Insights
 The Catboost classifier was harnessed for its robustness, trained with precision metrics like AUC. A special focus was on the Hitrate@5 metric, a custom inclusion, ensuring alignment with the model's purpose.
 
-**Performance Metrics**
+
+
+### Performance Metrics
 On the testing dataset, the Hitrate@5 metric, indicative of the user's propensity to like at least one of the top 5 recommended posts, clocked in at an impressive 0.63.
 
-**API Specifications**
+
+
+### API Specifications
 Employing FastAPI, our service accepts:
 - **id**: User ID requesting posts.
 - **time**: Datetime stamp (e.g., `datetime.datetime(year=2023, month=8, day=18, hour=15)`).
